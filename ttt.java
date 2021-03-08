@@ -3,6 +3,8 @@ import java.awt.*;
 import javax.swing.border.Border;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.time.Instant;
+import java.time.Duration;
 
 public class ttt{
 
@@ -15,8 +17,9 @@ public class ttt{
 class game extends JFrame implements ActionListener{
 
 	JLabel l0;//main menu/gameboard;
-	JPanel p;//XOs
-	JLabel l[];
+	JPanel p;//XO area
+	JLabel winloc;
+	JLabel l[];//XO squares
 	ImageIcon X;
 	ImageIcon O;
 	JButton b0;//Quit
@@ -27,10 +30,13 @@ class game extends JFrame implements ActionListener{
 	tic gmbd;//gameboard
 	ImageIcon img1;
 	ImageIcon img2;
+	ImageIcon img[];
 	JButton sq[];//top-left square
+	Instant s;
 	int flag[];
 	//flag[0] -> 0 = 1P 1 = 2P
 	//flag[1] -> 0 = P1 turn 1 = 2P turn
+	//flag[2] -> 0 = P1WIN 1 = 2PWIN 2 = CPUWIN
 
 	game(){
 		gmbd = new tic();
@@ -48,6 +54,16 @@ class game extends JFrame implements ActionListener{
 		//Game Area
 		img2 = new ImageIcon("empty.png");
 
+		//Winners
+		img = new ImageIcon[4];
+		img[0] = new ImageIcon("1P.png");
+		img[1] = new ImageIcon("2P.png");
+		img[2] = new ImageIcon("CPU.png");
+		img[3] = new ImageIcon("Lose.png");
+		winloc = new JLabel();
+		winloc.setLayout(null);
+		winloc.setBounds(0,357,350,150);
+		winloc.setVisible(true);
 		//Buttons
  
 		//quit
@@ -107,7 +123,6 @@ class game extends JFrame implements ActionListener{
 			l[x].setLayout(null);
 			l[x].setVisible(true);
 		}//for
-		//l[0].setBounds(10,35,100,100);
 
 		//Actual tictactoe panel
 		p = new JPanel();
@@ -130,7 +145,7 @@ class game extends JFrame implements ActionListener{
 		this.setIconImage(img0.getImage());
 		this.add(b0);
 		this.add(b1);
-		this.add(b2);
+		//this.add(b2);
 		b2.setVisible(false);
 		this.add(b3);
 		b3.setVisible(false);
@@ -155,13 +170,18 @@ class game extends JFrame implements ActionListener{
 			b2.setVisible(false);
 			summon();
 			flag[0] = 1;
+			s = Instant.now();
 		}//else if
 		else if(e.getSource() == sq[0]){//tl
 			sq[0].setVisible(false);
-			if((flag[1] & 0x1) == 0)
+			if((flag[1] & 0x1) == 0){
 				l[0].setIcon(X);
-			else
+				update(0,1);//Change state
+			}//if
+			else{
 				l[0].setIcon(O);
+				update(1,1);//Change state
+			}//else
 			l[0].setBounds(35,25,100,100);
 			l[0].setOpaque(true);
 			this.add(l[0]);
@@ -170,120 +190,147 @@ class game extends JFrame implements ActionListener{
 			flag[1] ^= 1;
 			//if((flag[1] & 0x0) == 0)//If 1P
 				//CPU();
-			update(1);//Change state
 		}//else if
 		else if(e.getSource() == sq[1]){//tm
 			sq[1].setVisible(false);
-			if((flag[1] & 0x1) == 0)
+			if((flag[1] & 0x1) == 0){
 				l[1].setIcon(X);
-			else
+				update(0,2);//Change state
+			}//if
+			else{
 				l[1].setIcon(O);
+				update(1,2);//Change state
+			}//else
 			l[1].setBounds(140,25,100,100);
 			l[1].setOpaque(true);
 			this.add(l[1]);
 			this.validate();
 			this.repaint();
 			flag[1] ^= 1;
-			update(2);//Change state
 		}//else if
 		else if(e.getSource() == sq[2]){//tr
 			sq[2].setVisible(false);
-			if((flag[1] & 0x1) == 0)
+			if((flag[1] & 0x1) == 0){
 				l[2].setIcon(X);
-			else
+				update(0,4);//Change state
+			}//if
+			else{
 				l[2].setIcon(O);
+				update(1,4);//Change state
+			}
 			l[2].setBounds(245,25,100,100);
 			l[2].setOpaque(true);
 			this.add(l[2]);
 			this.validate();
 			this.repaint();
 			flag[1] ^= 1;
-			update(4);//Change state
+
 		}//else if
 		else if(e.getSource() == sq[3]){//ml
 			sq[3].setVisible(false);
-			if((flag[1] & 0x1) == 0)
+			if((flag[1] & 0x1) == 0){
 				l[3].setIcon(X);
-			else
+				update(0,8);//Change state
+			}//if
+			else{
 				l[3].setIcon(O);
+				update(1,8);//Change state
+			}//else
 			l[3].setBounds(35,130,100,100);
 			l[3].setOpaque(true);
 			this.add(l[3]);
 			this.validate();
 			this.repaint();
 			flag[1] ^= 1;
-			update(8);//Change state
+			update(0,8);//Change state
 		}//else if
 		else if(e.getSource() == sq[4]){//mm
 			sq[4].setVisible(false);
-			if((flag[1] & 0x1) == 0)
+			if((flag[1] & 0x1) == 0){
 				l[4].setIcon(X);
+				update(0,16);//Change state
+			}//if
 			else
 				l[4].setIcon(O);
+				update(1,16);//Change state
 			l[4].setBounds(140,130,100,100);
 			l[4].setOpaque(true);
 			this.add(l[4]);
 			this.validate();
 			this.repaint();
 			flag[1] ^= 1;
-			update(16);//Change state
 		}//else if
 		else if(e.getSource() == sq[5]){//mr
 			sq[5].setVisible(false);
-			if((flag[1] & 0x1) == 0)
+			if((flag[1] & 0x1) == 0){
 				l[5].setIcon(X);
-			else
+				update(0,32);//Change state
+			}//if
+			else{
 				l[5].setIcon(O);
+				update(1,32);//Change state
+			}//else
 			l[5].setBounds(245,130,100,100);
 			l[5].setOpaque(true);
 			this.add(l[5]);
 			this.validate();
 			this.repaint();
 			flag[1] ^= 1;
-			update(32);//Change state
+
 		}//else if
 		else if(e.getSource() == sq[6]){//bl
 			sq[6].setVisible(false);
-			if((flag[1] & 0x1) == 0)
+			if((flag[1] & 0x1) == 0){
 				l[6].setIcon(X);
-			else
+				update(0,64);//Change state
+			}//if
+			else{
 				l[6].setIcon(O);
+				update(1,64);//Change state
+			}//else
 			l[6].setBounds(35,235,100,100);
 			l[6].setOpaque(true);
 			this.add(l[6]);
 			this.validate();
 			this.repaint();
 			flag[1] ^= 1;
-			update(64);//Change state
+
 		}//else if
 		else if(e.getSource() == sq[7]){//bm
 			sq[7].setVisible(false);
-			if((flag[1] & 0x1) == 0)
+			if((flag[1] & 0x1) == 0){
 				l[7].setIcon(X);
-			else
+				update(0,128);//Change state
+			}//if	
+			else{
 				l[7].setIcon(O);
+				update(1,128);//Change state
+			}//else
 			l[7].setBounds(140,235,100,100);
 			l[7].setOpaque(true);
 			this.add(l[7]);
 			this.validate();
 			this.repaint();
 			flag[1] ^= 1;
-			update(128);//Change state
 		}//else if
 		else if(e.getSource() == sq[8]){//br
 			sq[8].setVisible(false);
-			if((flag[1] & 0x1) == 0)
+			if((flag[1] & 0x1) == 0){
 				l[8].setIcon(X);
-			else
+				update(0,256);//Change state
+			}//if
+			else{
 				l[8].setIcon(O);
+				update(1,256);//Change state
+			}//else
 			l[8].setBounds(245,235,100,100);
 			l[8].setOpaque(true);
 			this.add(l[8]);
 			this.validate();
 			this.repaint();
 			flag[1] ^= 1;
-			update(256);//Change state
-			System.out.println(gmbd.state);
+			//System.out.println(gmbd.state[0]);
+			//System.out.println(gmbd.state[1]);
 		}//else if
 
 	}//actionPerformed
@@ -295,26 +342,87 @@ class game extends JFrame implements ActionListener{
 	}//play
 	
 	void summon(){
-		//l0.setIcon(img2);
 		l0.setVisible(false);
 		for(int x=0;x<9;x++)
 			this.add(sq[x]);
 		this.repaint();
 	}//summon
 
-	void update(int upd){//upd == square location
-		gmbd.state |= upd;
+	void update(int choice, int upd){//choice == player upd == square location
+		Instant brk = Instant.now();
+		Duration time = Duration.between(s,brk);
+		if(time.toMinutes() < 1){
+
+			if(choice == 0)
+				gmbd.state[choice] |= upd;
+			else
+				gmbd.state[choice] |= upd;
+				gmbd.lim++;
+			if(gmbd.lim == 8){
+				flag[2] = gmbd.winner(flag[0]);
+				//System.out.println(flag[2]);
+			}//if
+				flag[2] = gmbd.winner(flag[0]);
+				switch(flag[2]){//A VICTOR IS CHOSEN
+					case 0: victor(0);
+						break;
+					case 1: victor(1);
+						break;
+					case 2: victor(2);
+						break;
+					default:
+						break;
+			}//switch
+		}//if
+		else{
+			//System.out.println("TEST");
+			victor(3);
+		}//else
 	}//update
+
+	void victor(int choice){
+		l0.setVisible(true);
+		for(int x=0;x<9;x++){
+			sq[x].setVisible(false);
+			l[x].setVisible(false);
+		}//for
+		switch(choice){
+		case 0:
+			winloc.setIcon(img[0]);
+			break;
+		case 1:
+			winloc.setIcon(img[1]);
+			break;
+		case 2:
+			winloc.setIcon(img[2]);
+			break;
+		default:
+			winloc.setIcon(img[3]);
+			break;
+		}//switch
+		this.add(winloc);
+	}//victor
 }//game
 
 class tic{
-	int state;//gamestate
+	int state[];//gamestate
 	int gameover;
-	int winner;
+	int lim;//turn limit
 
 	tic(){
-		state = 0x0;
+		state = new int[2];
 		gameover = 0;
-		winner = 1;
+		lim = 0;
 	}//ttt
+
+	int winner(int flag){
+		if((state[0] & 7) == 7 || (state[0] & 56) == 56 || (state[0] & 448) == 448 || (state[0] & 73) == 73 || (state[0] & 146) == 146 || (state[0] & 292) == 292 || (state[0] & 84) == 84 || (state[0] & 273) == 273)//P1 wins
+			return 0;
+		else if((state[1] & 7) == 7 || (state[1] & 56) == 56 || (state[1] & 448) == 448 || (state[1] & 73) == 73 || (state[1] & 146) == 146 || (state[1] & 292) == 292 || (state[1] & 84) == 84 || (state[1] & 273) == 273)
+			if(flag == 0)
+				return 1;//CPU wins
+			else
+				return 2;//P2 wins
+		return 3;//Undecided
+	}//winner
 }//ttt

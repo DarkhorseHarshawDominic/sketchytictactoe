@@ -1,5 +1,3 @@
-package ttt;
-
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -29,6 +27,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.*;
+
 
 @SuppressWarnings({ "serial", "unused" })
 public class gridCreate extends JPanel implements ActionListener {
@@ -92,10 +92,10 @@ public class gridCreate extends JPanel implements ActionListener {
 			}
 		}
 	}
-
+		public static Timer timer = new Timer();
 	public static void main(String args[]) {
-		
-		SwingUtilities.invokeLater(() -> {
+		thr mainMenu = new thr();
+		/*SwingUtilities.invokeLater(() -> {
 			gridCreate view = new gridCreate();
 			view.setPreferredSize(new Dimension(1210, 1000));
 			JFrame frame = new JFrame();
@@ -110,7 +110,7 @@ public class gridCreate extends JPanel implements ActionListener {
 			frame.setVisible(true);
 			view.requestFocus();
 			view.start();
-		});
+		});*/
 		
 	}
 
@@ -174,10 +174,11 @@ public class gridCreate extends JPanel implements ActionListener {
 		omega.add(b2);
 		//b2.setVisible(false);
 		omega.add(b3);*/
-		
+		startTimer();
 		MouseHandler mouseHandler = new MouseHandler();
 		addMouseListener(mouseHandler);
 		addMouseMotionListener(mouseHandler);
+		
 
 	}
 
@@ -214,6 +215,26 @@ public class gridCreate extends JPanel implements ActionListener {
 			timer.schedule(exitApp, new Date(System.currentTimeMillis()+3*1000));
 		}
 
+	}
+	public static int time = 5;
+	public TimerTask timed = null;
+	public void startTimer() {
+		timed = new TimerTask() {
+			@Override 
+			public void run() {
+				int seconds = time % 60;
+				time--;
+				if(time <= 0) {//TIMER RUNS OUT, GAME EXITS
+					System.exit(0);
+				}
+			}
+
+		};			
+		timer.schedule(timed, 0, 1000);
+	}
+
+	public void restartTimer() {
+		time = 5;
 	}
 	
 	private class MouseHandler extends MouseAdapter {
@@ -515,9 +536,8 @@ public class gridCreate extends JPanel implements ActionListener {
 			 * (grid[row][col].hiddenValue == 3){ System.out.println("CPU wins!"); }
 			 * System.exit(0); }
 			 */
-			
+			restartTimer();
 		}
-		
 	}
 
 	/*public placeToken randomCoords(int m, int n) {
@@ -580,4 +600,95 @@ public class gridCreate extends JPanel implements ActionListener {
 	public void chooseWinner() {
 
 	}
-}
+
+}//gridCreate
+
+class thr extends JFrame implements ActionListener{
+	JButton b0;//1P
+	JButton b1;//2P
+	JLabel mm;
+	ImageIcon img0;
+
+	thr(){
+	
+		//mainmenu
+		img0 = new ImageIcon("MainMenu.png");
+
+		//main menu
+		mm = new JLabel();
+		mm.setIcon(img0);
+		mm.setSize(500,400);
+
+		//buttons
+		b0 = new JButton();//1P
+		b0.setBounds(140,400,100,50);
+		b0.addActionListener(this);
+		b0.setText("1P");
+
+		b1 = new JButton();//2P
+		b1.setBounds(35,400,100,50);
+		b1.addActionListener(this);
+		b1.setText("2P");
+
+		//frame data
+		this.setTitle("TicTacToo");
+		this.setSize(500,500);
+		this.setLayout(null);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setResizable(false);
+		this.add(mm);
+		this.add(b0);
+		this.add(b1);
+		this.setVisible(true);
+		b0.setVisible(true);
+		b1.setVisible(true);
+		
+	}//thr
+
+	@Override
+	public void actionPerformed(ActionEvent e){
+		if(e.getSource() == b0){//1P
+			SwingUtilities.invokeLater(() -> {
+				gridCreate view = new gridCreate();
+				view.setPreferredSize(new Dimension(1210, 1000));
+				JFrame frame = new JFrame();
+				frame.setLayout(new BorderLayout());
+				frame.add(view, BorderLayout.CENTER);
+				frame.setTitle("TicTacToo");
+				frame.getContentPane().add(view);
+				frame.setResizable(true);
+				frame.pack();
+				frame.setLocationRelativeTo(null);
+				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				//hide other window
+				this.setVisible(false);
+				frame.setVisible(true);
+				//set CPU to true
+				view.cpu = true;
+				view.requestFocus();
+				view.start();
+			});
+		}//if
+		else if(e.getSource() == b1){//2P
+			SwingUtilities.invokeLater(() -> {
+				gridCreate view = new gridCreate();
+				view.setPreferredSize(new Dimension(1210, 1000));
+				JFrame frame = new JFrame();
+				frame.setLayout(new BorderLayout());
+				frame.add(view, BorderLayout.CENTER);
+				frame.setTitle("TicTacToo");
+				frame.getContentPane().add(view);
+				frame.setResizable(true);
+				frame.pack();
+				frame.setLocationRelativeTo(null);
+				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				//hide other window
+				this.setVisible(false);
+				frame.setVisible(true);
+				view.requestFocus();
+				view.start();
+			});
+		}//if
+	}//actionPerformed
+
+}//thr

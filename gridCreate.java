@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 package something;
+=======
+
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -28,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.*;
+<<<<<<< HEAD
 
 
 @SuppressWarnings({ "serial", "unused" })
@@ -35,6 +40,15 @@ public class gridCreate extends JPanel implements ActionListener {
 	static int m = 0;// x
 	static int n = 0;// y
 	static int k = 0;
+=======
+
+
+@SuppressWarnings({ "serial", "unused" })
+public class gridCreate extends JPanel implements ActionListener {
+	int m = 3;// x
+	int n = 3;// y
+	int k = 3;
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 	public static int TILE_SIZE = 5;
 	public static placeToken[][] grid;
 	public boolean p1 = true;
@@ -45,8 +59,11 @@ public class gridCreate extends JPanel implements ActionListener {
 	public static int totPlays = 0;
 	public static boolean winnerState = false;
 	public static boolean drawState = false;
+<<<<<<< HEAD
 	public static boolean difficulty = true;
 	public static boolean cpuBlock = false;
+=======
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 	JLabel l0;// main menu/gameboard;
 	JPanel p;// XO area
 	JLabel winloc;
@@ -65,6 +82,7 @@ public class gridCreate extends JPanel implements ActionListener {
 	JFrame omega = null;
 
 	public void scale() {
+<<<<<<< HEAD
 		if (m >= n) {
 			if (m <= 4) {
 				int size = 25;
@@ -126,6 +144,23 @@ public class gridCreate extends JPanel implements ActionListener {
 			} // else if
 		} // if
 	}// scale
+=======
+		if(m * n <= 12) {
+			int size = 3000;
+			TILE_SIZE = size /(m * n);
+		}
+		else if(m * n <= 25) {
+			int size = 5000;
+			TILE_SIZE = size /(m * n);
+		}
+		else {
+			int size = 5000;
+			size = size / (m * n);
+			int size2 = size;
+			TILE_SIZE = size2;
+		}
+	}
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 
 	public gridCreate() {
 		grid = new placeToken[m][n];
@@ -165,10 +200,18 @@ public class gridCreate extends JPanel implements ActionListener {
 	@Override
 	protected void paintComponent(Graphics graph) {
 		draw((Graphics2D) graph);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 	}
 
 	public void start() {
@@ -260,6 +303,7 @@ public class gridCreate extends JPanel implements ActionListener {
 		public TimedExit() {
 			timer.schedule(exitApp, new Date(System.currentTimeMillis()+3*1000));
 		}
+<<<<<<< HEAD
 
 	}
 	public static int time = 30;
@@ -834,6 +878,316 @@ public class gridCreate extends JPanel implements ActionListener {
 				}
 			}
 			win = 1;
+=======
+
+	}
+	public static int time = 5;
+	public TimerTask timed = null;
+	public void startTimer() {
+		timed = new TimerTask() {
+			@Override 
+			public void run() {
+				int seconds = time % 60;
+				time--;
+				if(time <= 0) {//TIMER RUNS OUT, GAME EXITS
+					System.exit(0);
+				}
+			}
+
+		};			
+		timer.schedule(timed, 0, 1000);
+	}
+
+	public void restartTimer() {
+		time = 5;
+	}
+	
+	private class MouseHandler extends MouseAdapter {
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+
+			
+			int row = e.getX() / TILE_SIZE;
+			int col = e.getY() / TILE_SIZE;
+			int cpuX = 0;
+			int cpuY = 0;
+			int win = 0;
+			if (col < 0 || row < 0 || col > m - 1 || row > m - 1) {
+				return;
+			}
+
+			if (grid[row][col].img == null) {
+				if (SwingUtilities.isLeftMouseButton(e)) {
+					if (p1 == true) {// Player 1 plays
+						if (cpu == false) {
+							p1 = false;
+							p2 = true;
+						}
+						grid[row][col].img = getOImage();
+						grid[row][col].hiddenValue = 1;
+						totPlays++;
+						if (cpu == true) {// CPU plays
+							do {
+								cpuX = randomCoords(m);
+								cpuY = randomCoords(n);
+								if (grid[cpuX][cpuY].img == null) {
+									cpuNumPlays++;
+									grid[cpuX][cpuY].img = getXImage();
+									grid[cpuX][cpuY].hiddenValue = 3;
+									break;
+								}
+								if (cpuNumPlays >= Math.floor(m * n / 2)) {
+									winnerState = true;
+									if(winnerState) {
+										System.out.println("TIE");
+										break;
+									}
+								}
+								
+							} while (true);
+						}
+
+					} else if (p2 == true && cpu == false) {// Player 2 plays if cpu is false
+						p1 = true;
+						p2 = false;
+						grid[row][col].img = getXImage();
+						grid[row][col].hiddenValue = 2;
+						seconNumPlays++;
+						totPlays++;
+
+					}
+				}
+			}
+			repaint();
+			
+			win = 0;
+			for (int y = col - k <= 0 ? 1 : col - k; y < n; y++) {// checking top to bottom
+				if (grid[row][y - 1].img == null || grid[row][y].img == null) {
+					continue;
+				}
+				if (grid[row][y - 1].hiddenValue == (grid[row][y].hiddenValue)) {
+					win++;
+				} else {
+					win = 0;
+				}
+				
+				if (win == k - 1) {
+					winnerState = true;
+					if (grid[row][col].hiddenValue == 1) {
+						System.out.println("Player 1 wins!");
+					} else if (grid[row][col].hiddenValue == 2) {
+						System.out.println("Player 2 wins!");
+					}
+					if(winnerState) {
+						return;
+					}
+				}
+			}
+			win = 0;
+			for (int y = cpuY - k <= 0 ? 1 : cpuY - k; y < n; y++) {// checking top to bottom for CPU
+				if (grid[cpuX][y - 1].img == null || grid[cpuX][y].img == null) {
+					continue;
+				}
+				if (grid[cpuX][y - 1].hiddenValue == (grid[cpuX][y].hiddenValue)) {
+					win++;
+				} else {
+					win = 0;
+				}
+				if (win == k - 1) {
+					winnerState = true;
+					if (grid[cpuX][cpuY].hiddenValue == 3) {
+						System.out.println("CPU wins!");
+					}
+					if(winnerState) {
+						return;
+					}
+				}
+			}
+			win = 0;
+			for (int x = row - k <= 0 ? 1 : row - k; x < n; x++) {// checking horizontal
+				if (grid[x - 1][col].img == null || grid[x][col].img == null) {
+					continue;
+				}
+				if (grid[x - 1][col].hiddenValue == (grid[x][col].hiddenValue)) {
+					win++;
+				} else {
+					win = 0;
+				}
+				if (win == k - 1) {
+					winnerState = true;
+					if (grid[row][col].hiddenValue == 1) {
+						System.out.println("Player 1 wins!");
+					} else if (grid[row][col].hiddenValue == 2) {
+						System.out.println("Player 2 wins!");
+					} 
+					if(winnerState) {
+						return;
+					}
+				}
+			}
+			
+			win = 0;
+			for (int x = cpuX - k <= 0 ? 1 : cpuX - k; x < n; x++) {// checking horizontal CPU
+				if (grid[x - 1][cpuY].img == null || grid[x][cpuY].img == null) {
+					continue;
+				}
+				if (grid[x - 1][cpuY].hiddenValue == (grid[x][cpuY].hiddenValue)) {
+					win++;
+				} else {
+					win = 0;
+				}
+				if (win == k - 1) {
+					winnerState = true;
+					if (grid[cpuX][cpuY].hiddenValue == 3) {
+						System.out.println("CPU wins!");
+					}
+					if(winnerState) {
+						return;
+					}
+				}
+			}
+			win = 0;
+			for (int x = row + 1, y = col + 1; x < m && y < n; ++x, ++y) {//top left to bottom right diag
+				if ((grid[row][col].hiddenValue == grid[x][y].hiddenValue)) {
+					win++;
+				}
+				if ((grid[x][y].hiddenValue == 0 || grid[row][col].hiddenValue == 0)) {
+					continue;
+				}
+				if (win == k - 1) {
+					winnerState = true;
+					if (grid[row][col].hiddenValue == 1) {
+						System.out.println("Player 1 wins!");
+					} else if (grid[row][col].hiddenValue == 2) {
+						System.out.println("Player 2 wins!");
+					} 
+
+				}
+			}
+			for (int x = row - 1, y = col - 1; x >= 0 && y >= 0; --x, --y) {//top left to bottom right diag
+				if ((grid[row][col].hiddenValue == grid[x][y].hiddenValue)) {
+					win++;
+				}
+				if ((grid[x][y].hiddenValue == 0 || grid[row][col].hiddenValue == 0)) {
+					continue;
+				}
+				if (win == k - 1) {
+					winnerState = true;
+					if (grid[row][col].hiddenValue == 1) {
+						System.out.println("Player 1 wins!");
+					} else if (grid[row][col].hiddenValue == 2) {
+						System.out.println("Player 2 wins!");
+					}
+					if(winnerState) {
+						return;
+					}
+				}
+			}
+			win = 0;
+			for (int x = cpuY + 1, y = cpuY + 1; x < m && y < n; ++x, ++y) {//top left to bottom right diag CPU
+				if ((grid[cpuX][cpuY].hiddenValue == grid[x][y].hiddenValue)) {
+					win++;
+				}
+				if ((grid[x][y].hiddenValue == 0 || grid[cpuX][cpuY].hiddenValue == 0)) {
+					continue;
+				}
+				if (win == k - 1) {
+					winnerState = true;
+					if (grid[cpuX][cpuY].hiddenValue == 3) {
+						System.out.println("CPU wins!");
+					}
+
+				}
+			}
+			for (int x = cpuX - 1, y = cpuY - 1; x >= 0 && y >= 0; --x, --y) {//top left to bottom right diag CPU2
+				if ((grid[cpuX][cpuY].hiddenValue == grid[x][y].hiddenValue)) {
+					win++;
+				}
+				if ((grid[x][y].hiddenValue == 0 || grid[cpuX][cpuY].hiddenValue == 0)) {
+					continue;
+				}
+				if (win == k - 1) {
+					winnerState = true;
+					if (grid[cpuX][cpuY].hiddenValue == 3) {
+						System.out.println("CPU wins!");
+					}
+					if(winnerState) {
+						return;
+					}
+				}
+			}
+			
+			win = 0;
+			for (int x = row - 1, y = col + 1; x >= 0 && y < n; --x, ++y) {//checks down left
+				// top right to bottom left
+				if ((grid[row][col].hiddenValue == grid[x][y].hiddenValue)) {
+					win++;
+				}
+				if ((grid[x][y].hiddenValue == 0 || grid[row][col].hiddenValue == 0)) {
+					continue;
+				}
+				if (win == k - 1) {
+					winnerState = true;
+					if (grid[row][col].hiddenValue == 1) {
+						System.out.println("Player 1 wins!");
+					} else if (grid[row][col].hiddenValue == 2) {
+						System.out.println("Player 2 wins!");
+					} 
+					if(winnerState) {
+						return;
+					}
+				}
+			}
+			for (int x1 = row + 1, y1 = col - 1; x1 < m && y1 >= 0; ++x1, --y1) {
+				if ((grid[row][col].hiddenValue == grid[x1][y1].hiddenValue)) {
+					win++;
+				}
+				if (win == k - 1) {
+					winnerState = true;
+					if (grid[row][col].hiddenValue == 1) {
+						System.out.println("Player 1 wins!");
+					} else if (grid[row][col].hiddenValue == 2) {
+						System.out.println("Player 2 wins!");
+					}
+					if(winnerState) {
+						return;
+					}
+				}
+			}
+			win = 0;
+			for (int x = cpuX - 1, y = cpuY + 1; x >= 0 && y < n; --x, ++y) {//checks down left CPU
+				// top right to bottom left
+				if ((grid[cpuX][cpuY].hiddenValue == grid[x][y].hiddenValue)) {
+					win++;
+				}
+				if ((grid[x][y].hiddenValue == 0 || grid[cpuX][cpuY].hiddenValue == 0)) {
+					continue;
+				}
+				if (win == k - 1) {
+					winnerState = true;
+					if (grid[cpuX][cpuY].hiddenValue == 3) {
+						System.out.println("CPU wins!");
+					}
+
+				}
+			}
+			for (int x1 = cpuX + 1, y1 = cpuY - 1; x1 < m && y1 >= 0; ++x1, --y1) {
+				if ((grid[cpuX][cpuY].hiddenValue == grid[x1][y1].hiddenValue)) {
+					win++;
+				}
+				if (win == k - 1) {
+					winnerState = true;
+					if (grid[cpuX][cpuY].hiddenValue == 3) {
+						System.out.println("CPU wins!");
+					}
+					if(winnerState) {
+						return;
+					}
+				}
+			}
+			win = 0;
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 			if (seconNumPlays >= Math.floor(m * n / 2) && totPlays == m * n) {		
 				drawState = true;
 				if(drawState) {
@@ -842,7 +1196,11 @@ public class gridCreate extends JPanel implements ActionListener {
 				}
 			}
 			/*
+<<<<<<< HEAD
 			 * if(win == k) { if (grid[row][col].hiddenValue == 1) {
+=======
+			 * if(win == k - 1) { if (grid[row][col].hiddenValue == 1) {
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 			 * System.out.println("Player 1 wins!"); } else if (grid[row][col].hiddenValue
 			 * == 2) { System.out.println("Player 2 wins!"); } else if
 			 * (grid[row][col].hiddenValue == 3){ System.out.println("CPU wins!"); }
@@ -908,22 +1266,32 @@ public class gridCreate extends JPanel implements ActionListener {
 
 		} while (true);
 	}*/
+<<<<<<< HEAD
 	
 	public void cpuBlock() {
 		
 	}
+=======
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 
 	public void chooseWinner() {
 
 	}
 
+<<<<<<< HEAD
 //}//gridCreate
 
 static class thr extends JFrame implements ActionListener{
+=======
+}//gridCreate
+
+class thr extends JFrame implements ActionListener{
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 	JButton b0;//1P
 	JButton b1;//2P
 	JLabel mm;
 	ImageIcon img0;
+<<<<<<< HEAD
 	JTextField textField[];
 	JLabel mLabel;
 	JLabel nLabel;
@@ -932,6 +1300,8 @@ static class thr extends JFrame implements ActionListener{
 	//int nVal = 0;
 	//int kVal = 0;
 	int flag = 0;
+=======
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 
 	thr(){
 	
@@ -954,6 +1324,7 @@ static class thr extends JFrame implements ActionListener{
 		b1.addActionListener(this);
 		b1.setText("2P");
 
+<<<<<<< HEAD
 		//textbox
 		textField = new JTextField[3];
 		textField[0] = new JTextField(20);
@@ -982,6 +1353,8 @@ static class thr extends JFrame implements ActionListener{
 		kLabel.setLayout(null);
 
 
+=======
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 		//frame data
 		this.setTitle("TicTacToo");
 		this.setSize(500,500);
@@ -991,6 +1364,7 @@ static class thr extends JFrame implements ActionListener{
 		this.add(mm);
 		this.add(b0);
 		this.add(b1);
+<<<<<<< HEAD
 		this.add(textField[0]);
 		this.add(textField[1]);
 		this.add(textField[2]);
@@ -1006,6 +1380,11 @@ static class thr extends JFrame implements ActionListener{
 		this.setVisible(true);
 		b0.setVisible(false);
 		b1.setVisible(false);
+=======
+		this.setVisible(true);
+		b0.setVisible(true);
+		b1.setVisible(true);
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
 		
 	}//thr
 
@@ -1053,6 +1432,7 @@ static class thr extends JFrame implements ActionListener{
 				view.start();
 			});
 		}//if
+<<<<<<< HEAD
 		else if(e.getSource() == textField[0]){
 			String text = textField[0].getText();
 			m = Integer.parseInt(text) % 101;
@@ -1089,3 +1469,8 @@ static class thr extends JFrame implements ActionListener{
 
 }//thr
 }//gridCreate
+=======
+	}//actionPerformed
+
+}//thr
+>>>>>>> 9b3d96904f924e66f2247e261fddec1410b43a82
